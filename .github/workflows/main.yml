@@ -1,0 +1,58 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  workflow_dispatch:
+  
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    
+  schedule:
+    - cron: "10 0 * * *"
+    #定时8点10分，但是有延迟，估计会到9点的样子提醒
+    
+#要定时的时间+8  
+#这个意思就是定时每天的14点 但因为这个是国际协调时间UTC 
+#我们比它晚8个小时，所以对我们来说就是定时每天22点的时候 
+  # Allows you to run this workflow manually from the Actions tab
+ # workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # 当有name之后了，后面的run和uses不能加-
+      #这里用空格换行，每行空格保持一致就可以
+      - name: checkout actions
+        uses: actions/checkout@v1
+      
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v1
+        with:
+         python-version: 3.9
+         
+      - name: requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip3 install -r requirements.txt
+
+      - name: remind_python
+        run: |
+          cd "${{ github.workspace }}"
+          python3 demo.py
+
+      # Runs a set of commands using the runners shell
+      #- name: Run a multi-line script
+       # run: |
+          #echo Add other actions to build,
+          #echo test, and deploy your project.
